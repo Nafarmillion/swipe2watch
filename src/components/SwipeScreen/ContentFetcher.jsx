@@ -15,11 +15,10 @@ const ContentFetcher = ({
                             fromButton,
                             previousPath
                         }) => {
-    // Fetch content when needed
+    // Trigger a content fetch only in two scenarios:
+    // 1. First user to join an empty room — they populate the shared card deck
+    // 2. Any user returning from the match screen via "Continue Swiping"
     useEffect(() => {
-        // Only fetch content if either:
-        // 1. This is the first user joining an empty room
-        // 2. User is coming from the match screen via the "Continue Swiping" button
         const shouldFetchContent = (
             (roomData && isFirstUser && (!roomData.contentItems || Object.keys(roomData.contentItems).length === 0)) ||
             (fromButton && previousPath === `/match/${roomCode}`)
@@ -41,7 +40,7 @@ const ContentFetcher = ({
         try {
             let fetchedItems = [];
 
-            // Calculate how many items of each type to fetch based on selected categories
+            // Divide the total card budget proportionally across selected categories
             const selectedCategories = [];
             if (categories.anime) selectedCategories.push('anime');
             if (categories.movies) selectedCategories.push('movies');
@@ -51,15 +50,13 @@ const ContentFetcher = ({
             let itemsPerCategory = {};
 
             if (selectedCategories.length === 1) {
-                // If only one category, fetch all 20 items of that type
                 itemsPerCategory[selectedCategories[0]] = totalItems;
             } else if (selectedCategories.length === 2) {
-                // If two categories, fetch 10 items of each type
                 selectedCategories.forEach(category => {
                     itemsPerCategory[category] = totalItems / 2;
                 });
             } else if (selectedCategories.length === 3) {
-                // If all three categories, fetch 7 films, 7 anime, 6 series
+                // Slight bias toward movies and anime (both have richer TMDB/Jikan coverage)
                 itemsPerCategory['movies'] = 7;
                 itemsPerCategory['anime'] = 7;
                 itemsPerCategory['series'] = 6;
@@ -76,7 +73,7 @@ const ContentFetcher = ({
                     let animeList = [];
 
                     if (animeGenreIds) {
-                        // Genre filter selected — use getAnimeList directly (getRandomAnime has no genre support)
+                        // getRandomAnime has no genre filter — use getAnimeList when genres are selected
                         const animeResponse = await getAnimeList({
                             limit: animeLimit,
                             order_by: 'score',
@@ -271,9 +268,9 @@ const ContentFetcher = ({
                 console.warn("fetchedItems порожній!");
             }
 
-            // Shuffle the array to mix different content types
+            // Interleave movies, anime and series using Fisher-Yates shuffle
+            // so the user doesn't see all movies first, then all anime, etc.
             const shuffleArray = (array) => {
-                // Fisher-Yates shuffle algorithm
                 for (let i = array.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [array[i], array[j]] = [array[j], array[i]];
@@ -281,7 +278,6 @@ const ContentFetcher = ({
                 return array;
             };
 
-            // Mix the content types
             const shuffledItems = shuffleArray([...fetchedItems]);
             console.log('Content has been shuffled');
 
@@ -292,17 +288,15 @@ const ContentFetcher = ({
                 return;
             }
 
-            // Додаємо елементи в state
+            // Update local state immediately so the UI can start rendering cards
             setContentItems(shuffledItems);
 
-            // Add fetched items to content items state
+            // Persist items to Supabase so other room participants can vote on the same deck.
+            // Even if this write fails the current user can still swipe — we just log the error.
             try {
-                console.log("Додаємо елементи в базу даних...");
                 await addMultipleContentItems(roomCode, shuffledItems);
-                console.log("Елементи успішно додані в базу даних");
             } catch (err) {
                 console.error('Error adding content to database:', err);
-                // Навіть при помилці запису в БД, ми все ще можемо показати контент користувачу
             }
         } catch (error) {
             console.error('Error fetching content:', error);

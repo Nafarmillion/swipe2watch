@@ -4,7 +4,9 @@ import { createRoom } from '../services/database/superBase';
 import './css/CreateRoom.css';
 import { useTranslation } from 'react-i18next';
 
-// Genre keys available per category
+// Defines which genre keys are available for each content category.
+// TV series has fewer genres because TMDB's TV taxonomy is more limited
+// (e.g. horror has no dedicated TV genre ID on TMDB).
 const GENRE_KEYS_BY_CATEGORY = {
     movies: ['comedy', 'drama', 'action', 'crime', 'horror', 'romance', 'fantasy', 'mystery', 'thriller', 'sci_fi'],
     series: ['comedy', 'drama', 'action', 'crime', 'fantasy', 'mystery', 'sci_fi'],
@@ -28,7 +30,10 @@ function CreateRoom() {
 
     const [genres, setGenres] = useState([]);
 
-    // Genres available in ALL selected categories (intersection)
+    // Compute the intersection of genre keys across all selected categories.
+    // Only genres supported by EVERY selected category are shown,
+    // so the user can never pick a genre that would silently filter out one category.
+    // Falls back to the full movies list when no category is selected yet.
     const availableGenreKeys = useMemo(() => {
         const selected = Object.entries(categories).filter(([, v]) => v).map(([k]) => k);
         if (selected.length === 0) return Object.keys(GENRE_KEYS_BY_CATEGORY.movies);
@@ -56,7 +61,8 @@ function CreateRoom() {
     const handleCategoryToggle = (category) => {
         setCategories(prev => {
             const next = { ...prev, [category]: !prev[category] };
-            // Compute available genres for new category selection and clean up genres state
+            // After toggling, recompute available genres for the new selection
+            // and remove any selected genres that are no longer valid
             const selected = Object.entries(next).filter(([, v]) => v).map(([k]) => k);
             if (selected.length > 0) {
                 const available = selected.reduce((acc, cat) => {

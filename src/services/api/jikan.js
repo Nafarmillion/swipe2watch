@@ -1,7 +1,8 @@
+// Jikan is an unofficial MAL (MyAnimeList) REST API — no auth key required
 const API_URL = 'https://api.jikan.moe/v4';
 
-
-// Genre key → MAL (MyAnimeList) genre ID
+// Maps our internal genre keys (same keys used for movies/TV) to MAL genre IDs.
+// MAL uses a completely separate ID system from TMDB.
 const ANIME_GENRE_IDS = {
     action: 1,
     adventure: 2,
@@ -16,10 +17,13 @@ const ANIME_GENRE_IDS = {
     crime: 39,
 };
 
-// Convert array of genre keys to comma-separated MAL IDs string
+// Converts an array of genre keys to a comma-separated MAL ID string
+// required by the Jikan `genres` query parameter
 export const genreKeysToAnimeIds = (keys) =>
     keys.map(k => ANIME_GENRE_IDS[k]).filter(Boolean).join(',');
 
+// Fetches a sorted/filtered list of anime from Jikan.
+// Pass `genreIds` (from genreKeysToAnimeIds) to filter by genre.
 export const getAnimeList = async (filters = {}) => {
     const params = new URLSearchParams({
         limit: filters.limit || 20,
