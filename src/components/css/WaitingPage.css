@@ -1,0 +1,261 @@
+/* WaitingPage.css */
+:root {
+    --primary-color: #ff5d95;
+    --secondary-color: #7a4ff5;
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --border-color: #333333;
+}
+
+.waiting-page {
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Room header styles (reused from other screens) */
+.room-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
+}
+
+.room-header h2 {
+    font-size: 1.3rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.participants-count {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.leave-button {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.leave-button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Loading and error states (reused from other screens) */
+.loading-container, .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-container h2 {
+    color: #ff4747;
+    margin-bottom: 20px;
+}
+
+.error-container button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.error-container button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Waiting page specific styles */
+.waiting-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: calc(100vh - 60px);
+}
+
+.waiting-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.waiting-icon {
+    margin: 0 auto 30px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    padding: 25px;
+}
+
+.waiting-icon svg {
+    stroke: var(--primary-color);
+}
+
+.waiting-card h1 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.waiting-card p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.room-code-display {
+    margin: 40px 0;
+}
+
+.room-code-display p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.room-code-display .code {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 15px 0;
+}
+
+.copy-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.participants-area {
+    margin: 40px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+}
+
+.participants-area h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.participants-message {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.start-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-button:hover:not(.disabled) {
+    opacity: 0.9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.start-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #555;
+}
+
+@media (max-width: 768px) {
+    .waiting-card {
+        padding: 30px 20px;
+    }
+
+    .room-code-display .code {
+        font-size: 1.8rem;
+    }
+
+    .waiting-card h1 {
+        font-size: 1.8rem;
+    }
+
+    .room-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .room-header .leave-button {
+        margin-top: 8px;
+    }
+}

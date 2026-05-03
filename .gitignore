@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+.vercel
+
+# production
+build/
+
+# environment variables — NEVER commit these
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# logs
+npm-debug.log*
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

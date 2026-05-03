@@ -1,0 +1,390 @@
+/* MatchScreen.css */
+:root {
+    --primary-color: #ff5d95;
+    --secondary-color: #7a4ff5;
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --border-color: #333333;
+    --like-color: #47ff9a;
+    --dislike-color: #ff4747;
+    --match-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.matches-screen {
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Room header styles */
+.room-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
+}
+
+.room-header h2 {
+    font-size: 1.3rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.participants-count {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.leave-button {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.leave-button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Loading and error states */
+.loading-container, .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    width: 100%;
+    max-width: 5020px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-container h2 {
+    color: var(--dislike-color);
+    margin-bottom: 20px;
+}
+
+.error-container button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.error-container button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Main matches content */
+.matches-main {
+    padding: 40px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.matches-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.matches-heading h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    background: var(--match-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.swipe-button {
+    background: var(--match-gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.swipe-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.swipe-button-large {
+    background: var(--match-gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 18px 36px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 40px;
+}
+
+.swipe-button-large:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* No matches state */
+.no-matches {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 50px 30px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    margin: 60px auto;
+    max-width: 600px;
+}
+
+.no-matches-icon {
+    margin: 0 auto 30px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    padding: 25px;
+}
+
+.no-matches-icon svg {
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+}
+
+.no-matches h2 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.no-matches p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+/* Matches grid */
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+/* Set a minimum width for the cards */
+.match-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    min-width: 280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    height: 100%; /* Make card take full height of grid cell */
+}
+
+/* Make container more narrow to force wider cards */
+.matches-main {
+    padding: 40px 30px;
+    max-width: 1200px; /* Reduced from 1400px */
+    margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .matches-grid {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .matches-grid {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .matches-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .match-card {
+        max-width: 400px; /* Control maximum width on mobile */
+        margin: 0 auto;
+    }
+}
+
+.match-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.match-image {
+    height: 350px; /* Fixed height instead of padding approach */
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+
+}
+
+.match-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes the image cover the entire container */
+    object-position: center; /* Centers the image */
+}
+
+.match-card:hover .match-image img {
+    transform: scale(1.05);
+}
+
+.match-info {
+    padding: 30px 25px;
+}
+
+.match-info h3 {
+    font-size: 1.6rem;
+    margin: 0 0 20px;
+    color: var(--text-color);
+}
+
+.match-info p {
+    margin: 8px 0;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.match-score {
+    color: var(--like-color) !important;
+    font-weight: 500;
+    font-size: 1.2rem !important;
+}
+
+.match-users {
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+    margin-top: 20px !important;
+}
+
+.match-date {
+    font-size: 0.9rem !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-top: 12px !important;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.2s;
+    text-decoration: none;
+    margin: 10px;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .matches-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .matches-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .room-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .room-header .leave-button {
+        margin-top: 12px;
+    }
+
+    .matches-main {
+        padding: 25px 15px;
+    }
+
+    .matches-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .match-card {
+        width: 100%;
+    }
+
+    .matches-heading {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+}

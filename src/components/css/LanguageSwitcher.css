@@ -1,0 +1,83 @@
+/* LanguageSwitcher.css */
+.language-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+
+.language-switcher button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+}
+
+.language-switcher button:hover {
+    background-color: #f5f5f5;
+}
+
+.language-switcher button.active {
+    background-color: #4c84ff;
+    color: white;
+    border-color: #4c84ff;
+    font-weight: 500;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    margin-right: 8px;
+    background-size: cover;
+    display: inline-block;
+}
+
+.flag-icon-en {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1200px-Flag_of_the_United_States.svg.png');
+}
+
+.flag-icon-ua {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDgwMCI+DQo8cmVjdCB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI4MDAiIGZpbGw9IiNGRkQwMDAiLz4NCjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzAwNTVBNCIvPg0KPC9zdmc+');
+}
+
+/* For dark themes or different color schemes */
+.dark-theme .language-switcher button {
+    background: none;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+.dark-theme .language-switcher button:hover {
+    background-color: #333;
+}
+
+.dark-theme .language-switcher button.active {
+    background-color: #5c94ff;
+    color: white;
+    border-color: #5c94ff;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+    .language-switcher {
+        gap: 8px;
+    }
+
+    .language-switcher button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .flag-icon {
+        width: 16px;
+        height: 12px;
+        margin-right: 5px;
+    }
+}

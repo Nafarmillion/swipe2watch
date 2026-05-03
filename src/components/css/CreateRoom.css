@@ -1,0 +1,217 @@
+/* CreateRoom.css */
+:root {
+    --primary-color: #ff5d95;
+    --secondary-color: #7a4ff5;
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --form-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --border-color: #333333;
+    --error-color: #ff4747;
+    --success-color: #47ff9a;
+}
+
+.create-room-container {
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.create-room-container h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.create-room-form {
+    background-color: var(--form-bg);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.form-group h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.form-group p {
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 93, 149, 0.2);
+}
+
+.categories-container, .genres-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.category-item, .genre-tag {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-item.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: 1px solid transparent;
+}
+
+.genre-tag.active {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.filters-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.range-slider {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.create-button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 30px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.create-button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Стилі для екрану успішного створення кімнати */
+.room-created {
+    background-color: var(--form-bg);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.room-created h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--success-color);
+}
+
+.room-code {
+    margin: 40px 0;
+}
+
+.room-code p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.code-display {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 20px 0;
+}
+
+.room-created button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 5px;
+    transition: all 0.3s ease;
+}
+
+.room-created button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.start-button {
+    font-size: 1.2rem;
+    padding: 15px 40px !important;
+    margin-top: 30px !important;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .create-room-container {
+        padding: 20px 10px;
+    }
+
+    .create-room-form {
+        padding: 20px;
+    }
+
+    .filters-section {
+        grid-template-columns: 1fr;
+    }
+
+    .code-display {
+        font-size: 2rem;
+    }
+}

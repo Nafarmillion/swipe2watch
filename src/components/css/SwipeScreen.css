@@ -1,0 +1,509 @@
+/* Enhanced SwipeScreen.css */
+:root {
+    --primary-color: #ff5d95;
+    --secondary-color: #7a4ff5;
+    --bg-color: #181818;
+    --card-bg: #242424;
+    --text-color: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --border-color: #404040;
+    --like-color: #47ff9a;
+    --dislike-color: #ff4747;
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --shadow-small: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.4);
+    --shadow-large: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.swipe-screen {
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    background-image:
+            radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.03) 2%, transparent 0%),
+            radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.03) 2%, transparent 0%);
+    background-size: 100px 100px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 50px 0;
+    position: relative;
+}
+
+/* Add subtle decorative elements to background */
+.swipe-screen::before {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 5%;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    opacity: 0.03;
+    z-index: 0;
+    filter: blur(50px);
+}
+
+.swipe-screen::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: var(--secondary-color);
+    opacity: 0.04;
+    z-index: 0;
+    filter: blur(40px);
+}
+
+/* Enhanced Room header styles */
+.room-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px;
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-small);
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+}
+
+/* Add subtle pattern to header */
+.room-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+            radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 20%);
+    opacity: 0.3;
+    z-index: -1;
+}
+
+.room-header h2 {
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.participants-count {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-top: 3px;
+}
+
+.leave-button {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.leave-button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Add shine effect */
+.leave-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.leave-button:hover::before {
+    left: 100%;
+}
+
+/* Enhanced content card styles */
+.content-card {
+    background-color: var(--card-bg);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 2;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-large);
+}
+
+/* Add decorative side accent */
+.content-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--gradient-primary);
+    z-index: 1;
+}
+
+.content-image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+}
+
+.content-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    z-index: 1;
+}
+
+.content-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.content-card:hover .content-image img {
+    transform: scale(1.05);
+}
+
+.content-info {
+    padding: 25px;
+    position: relative;
+}
+
+/* Add decorative elements to content info */
+.content-info::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    z-index: 0;
+}
+
+.content-info h3 {
+    font-size: 1.7rem;
+    margin: 0 0 18px 0;
+    color: var(--text-color);
+    position: relative;
+}
+
+.content-info h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 3px;
+}
+
+.content-meta {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.content-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.genre-tag {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.genre-tag:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.content-synopsis {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 25px;
+    padding-right: 10px;
+    /* Add custom scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(255, 255, 255, 0.1);
+}
+
+/* Custom scrollbar for webkit browsers */
+.content-synopsis::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-synopsis::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.content-synopsis::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* Enhanced swipe actions */
+.swipe-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px 25px;
+}
+
+.like-button, .dislike-button {
+    flex: 1;
+    padding: 14px 0;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.like-button {
+    background-color: var(--like-color);
+    color: #000;
+    box-shadow: 0 4px 10px rgba(71, 255, 154, 0.3);
+}
+
+.dislike-button {
+    background-color: var(--dislike-color);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(255, 71, 71, 0.3);
+}
+
+.like-button:hover, .dislike-button:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+.like-button:hover {
+    box-shadow: 0 6px 15px rgba(71, 255, 154, 0.4);
+}
+
+.dislike-button:hover {
+    box-shadow: 0 6px 15px rgba(255, 71, 71, 0.4);
+}
+
+/* Add shine effect to buttons */
+.like-button::before, .dislike-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.like-button:hover::before, .dislike-button:hover::before {
+    left: 100%;
+}
+
+/* Enhanced swipe overlays and indicators */
+.swipe-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 5;
+    backdrop-filter: blur(2px);
+}
+
+.swipe-overlay.left {
+    background: linear-gradient(135deg, rgba(255, 71, 71, 0.8), rgba(255, 71, 71, 0));
+    left: 0;
+}
+
+.swipe-overlay.right {
+    background: linear-gradient(135deg, rgba(71, 255, 154, 0), rgba(71, 255, 154, 0.8));
+    right: 0;
+}
+
+.swiping-left .swipe-overlay.left,
+.swiping-right .swipe-overlay.right {
+    opacity: 1;
+}
+
+.swipe-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 18px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    transform: rotate(-15deg);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.swipe-overlay.right .swipe-indicator {
+    transform: rotate(15deg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+}
+
+
+.content-unavailable {
+    font-size: 1.8rem;
+    margin: 20px 0;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+
+.continue-button {
+    padding: 16px 40px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 25px;
+    box-shadow: var(--shadow-small);
+    position: relative;
+    overflow: hidden;
+}
+
+.continue-button:hover {
+    opacity: 0.95;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Add shine effect to continue button */
+.continue-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.continue-button:hover::before {
+    left: 100%;
+}
+
+/* Responsive styles with enhancements */
+
+@media (max-width: 600px) {
+    .content-card {
+        max-width: 95%;
+        margin: 25px auto;
+    }
+
+    .content-image {
+        height: 250px;
+    }
+
+    .swipe-actions {
+        padding: 0 15px 20px;
+    }
+
+    .like-button, .dislike-button {
+        padding: 12px 0;
+        font-size: 1rem;
+        margin: 0 6px;
+    }
+
+    .room-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .content-synopsis {
+        max-height: 100px;
+    }
+
+}
