@@ -4,6 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
     joinRoom,
+    getRoomInfo,
     listenToRoomUpdates,
     updateUserViewingIndex,
     leaveRoom,
@@ -57,6 +58,9 @@ function SwipeScreen() {
     const [error, setError] = useState(null);
     const [showNameInput, setShowNameInput] = useState(false);
 
+    // Whether this user is the earliest active participant — only they fetch content
+    const [isFirstUser, setIsFirstUser] = useState(false);
+
     // Match tracking
     const [matches, setMatches] = useState({});
     const [processedMatchIds, setProcessedMatchIds] = useState(new Set());
@@ -69,40 +73,43 @@ function SwipeScreen() {
             setIsLoading(true);
 
             try {
-                // Join the room
-                const roomData = await joinRoom(roomCode, userId, displayName);
-                setRoomData(roomData);
+                // Step 1: upsert the user row into room_users
+                await joinRoom(roomCode, userId, displayName);
 
-                // Check if content already exists in the room
-                if (roomData.contentItems && Object.keys(roomData.contentItems).length > 0) {
-                    // Content exists - transform it to an array for our component
-                    const contentArray = Object.values(roomData.contentItems);
-                    // Sort by addedAt to ensure same order for all users
+                // Step 2: fetch the full room snapshot (users + contentItems + matches + votes).
+                // joinRoom only returns the raw rooms row — without this call contentItems
+                // would always be undefined and every user would re-fetch from the API.
+                const fullRoomData = await getRoomInfo(roomCode);
+                setRoomData(fullRoomData);
+
+                // Step 3: determine whether this user is the earliest active participant.
+                // Only that user is allowed to fetch content when the room is empty,
+                // so everyone else loads the same deck from the DB instead of calling
+                // the API independently and getting different random results.
+                const activeUsersList = Object.values(fullRoomData.users || {}).filter(u => u.active);
+                const sortedUsers = activeUsersList.sort((a, b) => a.joinedAt - b.joinedAt);
+                const userIsFirst = sortedUsers.length > 0 && sortedUsers[0].displayName === displayName;
+                setIsFirstUser(userIsFirst);
+
+                // Step 4: if content already exists in the room, load it immediately
+                if (fullRoomData.contentItems && Object.keys(fullRoomData.contentItems).length > 0) {
+                    const contentArray = Object.values(fullRoomData.contentItems);
                     contentArray.sort((a, b) => a.addedAt - b.addedAt);
                     setContentItems(contentArray);
                 }
 
-                // Set up listeners for room updates
+                // Set up real-time listener — syncs content added by the first user
+                // to all other participants and keeps room state up to date
                 const unsubscribeRoom = listenToRoomUpdates(roomCode, (data) => {
                     setRoomData(data);
 
-                    // If there's no content yet and we're the first user (or have lowest userId)
-                    // then initialize content
-                    const activeUsers = data.users ? Object.values(data.users).filter(u => u.active) : [];
-                    const sortedUsers = activeUsers.sort((a, b) => a.joinedAt - b.joinedAt);
-                    const isFirstUser = sortedUsers.length > 0 && sortedUsers[0].displayName === displayName;
-
-                    if ((!data.contentItems || Object.keys(data.contentItems).length === 0) && isFirstUser) {
-                        // Content fetching is handled by ContentFetcher component
-                    }
-                    else if(fromButton && previousPath ===`/match/${roomCode}`){
-                        setContentItems([]); // Спочатку очищаємо масив
-                        setCurrentIndex(0); // Скидаємо індекс до початку
-                        setIsLoading(true); // Показуємо індикатор завантаження
-                        // Content fetching is handled by ContentFetcher component
-                    }
-                    // If content was added by someone else, update our local state
-                    else if (data.contentItems && Object.keys(data.contentItems).length > 0) {
+                    if (fromButton && previousPath === `/match/${roomCode}`) {
+                        // "Continue Swiping" — clear the deck so ContentFetcher re-fetches
+                        setContentItems([]);
+                        setCurrentIndex(0);
+                        setIsLoading(true);
+                    } else if (data.contentItems && Object.keys(data.contentItems).length > 0) {
+                        // New content arrived (written by the first user) — sync to local state
                         const contentArray = Object.values(data.contentItems);
                         contentArray.sort((a, b) => a.addedAt - b.addedAt);
                         setContentItems(contentArray);
@@ -190,7 +197,7 @@ function SwipeScreen() {
                     roomData={roomData}
                     userId={userId}
                     userName={userName}
-                    isFirstUser={true}
+                    isFirstUser={isFirstUser}
                     fromButton={fromButton}
                     previousPath={previousPath}
                     setContentItems={setContentItems}
