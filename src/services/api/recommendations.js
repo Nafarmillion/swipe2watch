@@ -47,25 +47,29 @@ const classifyType = (type) => {
 
 /**
  * Counts genre frequency and content-type distribution across all matched items.
+ * Uses contentItems for the full data when available; falls back to the match
+ * snapshot's own fields (type/genres added by transformMatch) when not found.
  *
  * @param {Array}  matches      — match objects, each with a `contentId` (Supabase UUID)
- * @param {Object} contentItems — map of Supabase UUID → content item (type, genres)
+ * @param {Object} contentItems — map of Supabase UUID → content item (may be empty)
  * @returns {{ topGenreKeys: string[], typeCount: { anime, movie, tv } }}
  */
 const analyzeMatches = (matches, contentItems) => {
-    const genreFreq   = {};
-    const typeCount   = { anime: 0, movie: 0, tv: 0 };
+    const genreFreq = {};
+    const typeCount = { anime: 0, movie: 0, tv: 0 };
 
     for (const match of matches) {
-        const item = contentItems[match.contentId];
-        if (!item) continue;
+        // Prefer the full item from contentItems; fall back to match snapshot fields
+        const item    = contentItems[match.contentId];
+        const type    = item?.type    ?? match.type;
+        const genres  = item?.genres  ?? match.genres ?? [];
 
         // Tally content type
-        const bucket = classifyType(item.type);
+        const bucket = classifyType(type);
         typeCount[bucket]++;
 
         // Tally genres — only keys we know how to filter on
-        for (const genre of (item.genres || [])) {
+        for (const genre of genres) {
             const key = GENRE_NAME_TO_KEY[genre.name];
             if (key) genreFreq[key] = (genreFreq[key] || 0) + 1;
         }
@@ -98,9 +102,9 @@ const distributeSlots = (typeCount, total = 5) => {
 
     // Proportional allocation, minimum 1 per present type
     for (const [type, count] of present) {
-        const share    = Math.max(1, Math.round((count / sum) * total));
-        slots[type]    = share;
-        assigned      += share;
+        const share  = Math.max(1, Math.round((count / sum) * total));
+        slots[type]  = share;
+        assigned    += share;
     }
 
     // Trim excess from the largest bucket (keeping it ≥ 1)
@@ -126,24 +130,25 @@ const distributeSlots = (typeCount, total = 5) => {
  * Fetches 5 content recommendations tailored to a room's match profile.
  *
  * Strategy:
- *   1. Count the genres and content types in the matched items.
+ *   1. Count genres and content types across matched items.
  *   2. Distribute 5 recommendation slots proportionally across types.
  *   3. Fetch each type using genre filters derived from the match profile.
- *   4. Exclude any items whose IDs already appear in the room's contentItems.
+ *   4. If a Jikan (anime) fetch fails, fall back to TMDB movies/series so the
+ *      user always sees something — Jikan has stricter rate limits than TMDB.
+ *   5. Exclude items whose IDs already appear in the room's contentItems.
  *
  * @param {Array}  matches      — current room matches (from MatchScreen state)
- * @param {Object} contentItems — all content already in the room (Supabase UUID → item)
+ * @param {Object} contentItems — all content already in the room (may be empty)
  * @returns {Promise<Array>}    — up to 5 formatted recommendation items
  */
-export const fetchRecommendations = async (matches, contentItems) => {
+export const fetchRecommendations = async (matches, contentItems = {}) => {
     if (!matches?.length) return [];
 
     const { topGenreKeys, typeCount } = analyzeMatches(matches, contentItems);
     const slots = distributeSlots(typeCount, 5);
 
     // Build an exclusion set from every item already visible in the room.
-    // contentItem.id = external_id (TMDB/MAL numeric ID stored as string),
-    // which matches item.id returned by the API formatters.
+    // contentItem.id = external_id (TMDB/MAL numeric ID stored as string).
     const excludeIds = new Set(
         Object.values(contentItems).map(item => String(item.id))
     );
@@ -152,10 +157,11 @@ export const fetchRecommendations = async (matches, contentItems) => {
 
     // ── Anime ──────────────────────────────────────────────────────────────────
     if (slots.anime > 0) {
+        let animeFetched = false;
         try {
             const genreIds = genreKeysToAnimeIds(topGenreKeys);
             const response = await getAnimeList({
-                // Fetch extra items so the exclude filter doesn't leave us short
+                // Fetch extra so the exclude filter doesn't leave us short
                 limit:    slots.anime + 10,
                 order_by: 'score',
                 sort:     'desc',
@@ -165,10 +171,31 @@ export const fetchRecommendations = async (matches, contentItems) => {
             const recs = formatted
                 .filter(item => item.image && !excludeIds.has(String(item.id)))
                 .slice(0, slots.anime)
-                .map(item => ({ ...item, type: 'anime' })); // normalise type label
-            results.push(...recs);
+                .map(item => ({ ...item, type: 'anime' }));
+
+            if (recs.length > 0) {
+                results.push(...recs);
+                animeFetched = true;
+            }
         } catch (err) {
-            console.error('[recommendations] anime fetch failed:', err);
+            console.warn('[recommendations] Jikan fetch failed (likely rate-limited):', err.message);
+        }
+
+        // Fallback: if Jikan returned nothing, use TMDB movies with the same genres.
+        // This gives the user something to see even when MAL is rate-limited.
+        if (!animeFetched) {
+            try {
+                const { results: movies = [] } = await getMovieList({
+                    limit:  slots.anime + 10,
+                    genres: topGenreKeys,
+                });
+                const recs = movies
+                    .filter(item => !excludeIds.has(String(item.id)))
+                    .slice(0, slots.anime);
+                results.push(...recs);
+            } catch (fallbackErr) {
+                console.error('[recommendations] TMDB movie fallback also failed:', fallbackErr);
+            }
         }
     }
 

@@ -138,8 +138,10 @@ export const getRoomInfo = async (roomCode) => {
     const contentMap = {};
     contentItems.forEach(item => {
         contentMap[item.id] = item; // needed by match transform below
-        // Skip placeholder rows created when a user voted before content was fully written
-        if (item.title && item.title !== 'Unknown Title' && item.synopsis && item.synopsis !== 'No description available.') {
+        // Skip placeholder rows created when a user voted before content was fully written.
+        // The DB column is `description` (not `synopsis`) — using the wrong name would
+        // make the condition always falsy and leave contentItemsObject permanently empty.
+        if (item.title && item.title !== 'Unknown Title' && item.description && item.description !== 'No description available.') {
             contentItemsObject[item.id] = transformContentItem(item);
         }
     });

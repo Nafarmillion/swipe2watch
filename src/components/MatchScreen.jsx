@@ -81,11 +81,13 @@ function MatchScreen() {
     }, [roomCode]);
 
     // ── Fetch recommendations ──────────────────────────────────────────────────
-    // Runs once when we have both matches and room content loaded.
-    // Uses a ref guard so re-renders and match updates don't trigger extra API calls.
+    // Runs once when the first batch of matches arrives.
+    // contentItems is passed for genre/type context and exclusion, but is not
+    // required to be non-empty — fetchRecommendations handles an empty map safely.
+    // The ref guard prevents duplicate API calls on re-renders.
     useEffect(() => {
         if (recsFetchedRef.current) return;
-        if (matches.length === 0 || Object.keys(contentItems).length === 0) return;
+        if (matches.length === 0) return;
 
         recsFetchedRef.current = true;
         setRecsLoading(true);
