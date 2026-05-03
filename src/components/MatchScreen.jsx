@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAnimeById } from '../services/api/jikan';
 import { formatSingleAnime } from '../services/utils/animeDataFormer';
-import {useParams, useNavigate, useLocation} from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     getRoomInfo,
     listenToMatches,
     listenToUsersCount
 } from '../services/database/superBase';
+import { fetchRecommendations } from '../services/api/recommendations';
 import './css/MatchScreen.css';
 import { useTranslation } from 'react-i18next';
 
@@ -23,9 +24,15 @@ function MatchScreen() {
     const [roomName, setRoomName] = useState('');
     const [activeUsers, setActiveUsers] = useState(0);
 
+    // Recommendations — fetched once after the first batch of matches arrives
+    const [recommendations, setRecommendations] = useState([]);
+    const [recsLoading, setRecsLoading] = useState(false);
+    // Guard flag so the fetch is triggered at most once per session
+    const recsFetchedRef = useRef(false);
+
     const location = useLocation();
 
-    // Fetch initial room data and set up listeners
+    // ── Fetch initial room data ────────────────────────────────────────────────
     useEffect(() => {
         const fetchRoomData = async () => {
             try {
@@ -43,7 +50,7 @@ function MatchScreen() {
         fetchRoomData();
     }, [roomCode]);
 
-    // Listen for matches
+    // ── Listen for matches ─────────────────────────────────────────────────────
     useEffect(() => {
         const handleMatchesUpdate = (matchesData) => {
             if (matchesData) {
@@ -62,11 +69,8 @@ function MatchScreen() {
             }
         };
 
-        // Set up listener for matches
         const unsubscribeMatches = listenToMatches(roomCode, handleMatchesUpdate);
-
-        // Set up listener for active users count
-        const unsubscribeUsers = listenToUsersCount(roomCode, (count) => {
+        const unsubscribeUsers   = listenToUsersCount(roomCode, (count) => {
             setActiveUsers(count);
         });
 
@@ -76,7 +80,26 @@ function MatchScreen() {
         };
     }, [roomCode]);
 
-    // Fetch missing anime details
+    // ── Fetch recommendations ──────────────────────────────────────────────────
+    // Runs once when we have both matches and room content loaded.
+    // Uses a ref guard so re-renders and match updates don't trigger extra API calls.
+    useEffect(() => {
+        if (recsFetchedRef.current) return;
+        if (matches.length === 0 || Object.keys(contentItems).length === 0) return;
+
+        recsFetchedRef.current = true;
+        setRecsLoading(true);
+
+        fetchRecommendations(matches, contentItems)
+            .then(items => setRecommendations(items))
+            .catch(err => {
+                console.error('Failed to fetch recommendations:', err);
+                recsFetchedRef.current = false; // allow one retry on error
+            })
+            .finally(() => setRecsLoading(false));
+    }, [matches, contentItems]);
+
+    // ── Fetch missing anime details ────────────────────────────────────────────
     useEffect(() => {
         const fetchMissingAnimeDetails = async () => {
             // Only fetch for matches with missing data
@@ -84,21 +107,14 @@ function MatchScreen() {
                 !match.image || (match.title && match.title.startsWith('Anime '))
             );
 
-            // Process each match
             for (const match of matchesNeedingDetails) {
                 try {
-                    // Check if we already have this anime's details cached
                     if (animeDetails[match.animeId]) continue;
 
                     console.log(`Fetching details for anime ${match.animeId}`);
-
-                    // Fetch anime details from API
-                    const response = await getAnimeById(match.animeId);
+                    const response    = await getAnimeById(match.animeId);
                     const formattedAnime = formatSingleAnime(response);
 
-                    console.log('Received anime details:', formattedAnime);
-
-                    // Cache the details
                     setAnimeDetails(prev => ({
                         ...prev,
                         [match.animeId]: formattedAnime
@@ -114,17 +130,13 @@ function MatchScreen() {
         }
     }, [matches, animeDetails]);
 
-    const handleBackToSwipe = () => {
-        navigate(`/swipe/${roomCode}`);
-    };
-    const handleNewContent = () => {
+    // ── Navigation handlers ───────────────────────────────────────────────────
+    const handleBackToSwipe = () => navigate(`/swipe/${roomCode}`);
+    const handleNewContent  = () =>
         navigate(`/swipe/${roomCode}`, { state: { fromButton: true, previousPath: location.pathname } });
-    };
+    const handleBackToHome  = () => navigate('/');
 
-    const handleBackToHome = () => {
-        navigate('/');
-    };
-
+    // ── Loading / error states ─────────────────────────────────────────────────
     if (loading) {
         return (
             <div className="matches-screen">
@@ -148,6 +160,7 @@ function MatchScreen() {
         );
     }
 
+    // ── Main render ───────────────────────────────────────────────────────────
     return (
         <div className="matches-screen">
             <header className="room-header">
@@ -163,12 +176,13 @@ function MatchScreen() {
             <main className="matches-main">
                 <div className="matches-heading">
                     <h1>{t('matchScreen.matches')}</h1>
-                    <button className="swipe-button" > не клікай {/*onClick={handleNewContent}*/}
+                    <button className="swipe-button"> не клікай {/*onClick={handleNewContent}*/}
                         {t('matchScreen.continue')}
                     </button>
                 </div>
 
                 {matches.length === 0 ? (
+                    /* ── Empty state ──────────────────────────────────────── */
                     <div className="no-matches">
                         <div className="no-matches-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -182,59 +196,110 @@ function MatchScreen() {
                         </button>
                     </div>
                 ) : (
-                    <div className="matches-grid">
-                        {matches.map((match) => {
-                            // First check if we have fetched details for this anime
-                            const animeDetail = animeDetails[match.animeId];
-                            // Then check if there's content in the contentItems
-                            const contentItem = contentItems[match.contentId] || {};
+                    <>
+                        {/* ── Matches grid ──────────────────────────────────── */}
+                        <div className="matches-grid">
+                            {matches.map((match) => {
+                                // Priority: freshly-fetched anime detail > room contentItem > match snapshot
+                                const animeDetail = animeDetails[match.animeId];
+                                const contentItem = contentItems[match.contentId] || {};
+                                const contentType = contentItem.type || match.type || 'anime';
 
-                            const contentType = contentItem.type || match.type || 'anime';
+                                const title = animeDetail?.title || contentItem.title || match.title || (
+                                    contentType === 'movie' ? `Movie ${match.animeId}` :
+                                    contentType === 'tv'    ? `TV Series ${match.animeId}` :
+                                                              `Anime ${match.animeId}`
+                                );
+                                const imageUrl = animeDetail?.image || contentItem.image || match.image || '/default-poster.png';
 
-                            // Choose the best available data, prioritizing fetched details
-                            const title = animeDetail?.title || contentItem.title || match.title || (
-                                contentType === 'movie' ? `Movie ${match.animeId}` :
-                                    contentType === 'tv' ? `TV Series ${match.animeId}` :
-                                        `Anime ${match.animeId}`
-                            );
-                            const imageUrl = animeDetail?.image || contentItem.image || match.image || '/default-poster.png';
-
-                            return (
-                                <div className="match-card" key={match.contentId || match.animeId}>
-                                    <div className="match-image">
-                                        <img
-                                            src={imageUrl}
-                                            alt={title}
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = '/default-poster.png';
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="match-info">
-                                        <h3>{title}</h3>
-                                        {(animeDetail?.year || contentItem.year) &&
-                                            <p className="match-year">Year: {animeDetail?.year || contentItem.year}</p>
-                                        }
-                                        {(animeDetail?.type || contentItem.type || match.type) &&
-                                            <p className="match-type">Type: {animeDetail?.type || contentItem.type || match.type}</p>
-                                        }
-                                        {(animeDetail?.score || contentItem.score || match.score) &&
-                                            <p className="match-score">Score: {animeDetail?.score || contentItem.score || match.score}/10</p>
-                                        }
-                                        {match.users && (
-                                            <p className="match-users">
-                                                Liked by {match.users.length} {match.users.length === 1 ? 'person' : 'people'}
+                                return (
+                                    <div className="match-card" key={match.contentId || match.animeId}>
+                                        <div className="match-image">
+                                            <img
+                                                src={imageUrl}
+                                                alt={title}
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = '/default-poster.png';
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="match-info">
+                                            <h3>{title}</h3>
+                                            {(animeDetail?.year || contentItem.year) &&
+                                                <p className="match-year">Year: {animeDetail?.year || contentItem.year}</p>
+                                            }
+                                            {(animeDetail?.type || contentItem.type || match.type) &&
+                                                <p className="match-type">Type: {animeDetail?.type || contentItem.type || match.type}</p>
+                                            }
+                                            {(animeDetail?.score || contentItem.score || match.score) &&
+                                                <p className="match-score">Score: {animeDetail?.score || contentItem.score || match.score}/10</p>
+                                            }
+                                            {match.users && (
+                                                <p className="match-users">
+                                                    Liked by {match.users.length} {match.users.length === 1 ? 'person' : 'people'}
+                                                </p>
+                                            )}
+                                            <p className="match-date">
+                                                Matched on {new Date(match.createdAt).toLocaleDateString()}
                                             </p>
-                                        )}
-                                        <p className="match-date">
-                                            Matched on {new Date(match.createdAt).toLocaleDateString()}
-                                        </p>
+                                        </div>
                                     </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* ── Recommendations section ────────────────────────── */}
+                        <section className="recommendations-section">
+                            <div className="recommendations-heading">
+                                <h2>{t('matchScreen.recommendations')}</h2>
+                                <p>{t('matchScreen.recsSubtitle')}</p>
+                            </div>
+
+                            {recsLoading ? (
+                                <div className="recs-loading">
+                                    <div className="loading-spinner"></div>
+                                    <span>{t('matchScreen.recsLoading')}</span>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            ) : recommendations.length > 0 ? (
+                                <div className="recommendations-grid">
+                                    {recommendations.map((item) => (
+                                        <div className="rec-card" key={`rec-${item.id}`}>
+                                            <div className="rec-image">
+                                                <img
+                                                    src={item.image || '/default-poster.png'}
+                                                    alt={item.title}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = '/default-poster.png';
+                                                    }}
+                                                />
+                                                <span className="rec-badge">
+                                                    {t('matchScreen.recsBadge')}
+                                                </span>
+                                            </div>
+                                            <div className="rec-info">
+                                                <h4>{item.title}</h4>
+                                                {item.year && (
+                                                    <p className="rec-meta">{item.year} · {item.type}</p>
+                                                )}
+                                                {item.score > 0 && (
+                                                    <p className="rec-score">
+                                                        ⭐ {Number(item.score).toFixed(1)}
+                                                    </p>
+                                                )}
+                                                {item.genres?.length > 0 && (
+                                                    <p className="rec-meta">
+                                                        {item.genres.slice(0, 2).map(g => g.name).join(' · ')}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </section>
+                    </>
                 )}
             </main>
         </div>

@@ -346,6 +346,160 @@
     transform: scale(1.05);
 }
 
+/* ─── Recommendations section ──────────────────────────────────────────────── */
+
+.recommendations-section {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+}
+
+.recommendations-heading {
+    margin-bottom: 30px;
+}
+
+.recommendations-heading h2 {
+    font-size: 1.8rem;
+    margin: 0 0 8px;
+    background: var(--match-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.recommendations-heading p {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* 5-column grid — one card per recommendation */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+/* ── Recommendation card ─────────────────────────────────────────────────── */
+
+.rec-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rec-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+}
+
+.rec-image {
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+}
+
+.rec-image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.rec-card:hover .rec-image img {
+    transform: scale(1.05);
+}
+
+/* "Recommended" pill overlaid on the poster */
+.rec-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--match-gradient);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    pointer-events: none;
+}
+
+.rec-info {
+    padding: 14px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rec-info h4 {
+    font-size: 0.95rem;
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.35;
+    /* Clamp to 2 lines so cards stay the same height */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.rec-meta {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+}
+
+.rec-score {
+    font-size: 0.85rem;
+    color: var(--like-color);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Loading row while recommendations are being fetched */
+.recs-loading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 0;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95rem;
+}
+
+/* Reuse the global spinner but smaller */
+.recs-loading .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+/* ─── Responsive overrides ──────────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+    .recommendations-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .recommendations-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .recommendations-grid { grid-template-columns: 1fr; }
+    .rec-image { height: 200px; }
+}
+
 /* Responsive styles */
 @media (max-width: 1200px) {
     .matches-grid {
