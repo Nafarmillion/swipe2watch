@@ -65,7 +65,11 @@
     "continue": "Continue Swiping",
     "noMatches": "No matches found yet",
     "keep": "Keep swiping to find content that everyone likes!",
-    "start": "Start Swiping"
+    "start": "Start Swiping",
+    "recommendations": "You might also like",
+    "recsSubtitle": "Based on your matches",
+    "recsLoading": "Finding recommendations...",
+    "recsBadge": "For you"
   },
   "createRoom": {
     "creating": "Creating a room",
