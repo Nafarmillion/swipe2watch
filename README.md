@@ -75,6 +75,7 @@ src/
 │   ├── api/
 │   │   ├── tmdb.js           # TMDB movie & TV fetching + genre maps
 │   │   └── jikan.js          # Jikan (MAL) anime fetching
+│   │   └── recommendations.js# added recommendations to match screen
 │   └── database/
 │       ├── client.js         # Supabase client instance
 │       ├── transforms.js     # Pure DB row → app object converters
