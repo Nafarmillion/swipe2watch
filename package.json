@@ -21,7 +21,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --testPathIgnorePatterns=integration",
+    "test:integration": "react-scripts test --testPathPattern=integration --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
