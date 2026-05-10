@@ -107,5 +107,6 @@ src/
 ```bash
 npm start     # development server
 npm test      # run tests in watch mode
+npm run test:integration #run integrations test
 npm run build # production build
 ```
