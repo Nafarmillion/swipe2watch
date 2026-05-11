@@ -77,7 +77,7 @@
     "name": "Name your room and set maximum number of participants ",
     "roomName": "Room name (optional)",
     "maxNumber": "Maximum number of participants",
-    "contentCategories": "Content categories (select anime or series, movies are still in development)",
+    "contentCategories": "Content categories",
     "selectCategories":"Select the types of content to view (at least one) ",
     "movies": "movies",
     "series": "series",
