@@ -112,7 +112,7 @@ src/
     └── use-localstorage.js   # Persistent local state hook
 ```
 
-## Database schema (Supabase)
+## Database schema (Supabase) 
 
 | Table | Key columns |
 |-------|------------|
