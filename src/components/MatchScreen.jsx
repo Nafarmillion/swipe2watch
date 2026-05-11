@@ -178,7 +178,7 @@ function MatchScreen() {
             <main className="matches-main">
                 <div className="matches-heading">
                     <h1>{t('matchScreen.matches')}</h1>
-                    <button className="swipe-button"> не клікай {/*onClick={handleNewContent}*/}
+                    <button className="swipe-button">{/*onClick={handleNewContent}*/}
                         {t('matchScreen.continue')}
                     </button>
                 </div>
