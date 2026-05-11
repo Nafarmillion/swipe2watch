@@ -39,11 +39,31 @@ cp .env.example .env
 
 Fill in `.env` with your credentials (see [Environment variables](#environment-variables)).
 
+## 🗄️ Database Setup
+
+The project uses [Supabase](https://supabase.com) as its backend.  
+A ready-to-use migration file is located at:
+migrationsSQL/initial_schema.sql
+
+It creates all five tables (`rooms`, `room_users`, `content_items`, `votes`, `matches`),
+indexes, and enables Realtime for all tables.
+### Option 1 — Supabase Dashboard (recommended)
+1. Open your project in [Supabase Dashboard](https://app.supabase.com)
+2. Go to **SQL Editor**
+3. Click **New query**
+4. Paste the contents of the migration file
+5. Click **Run**
+
+### Option 2 — Supabase CLI
 ```bash
-npm start
+# Install CLI (if not already installed)
+npm install -g supabase
+# Link to your project
+supabase link --project-ref <your-project-ref>
+# Apply the migration
+supabase db push
 ```
 
-App runs at `http://localhost:3000`.
 
 ## Environment variables
 
@@ -104,6 +124,7 @@ src/
 
 ## Scripts
 
+App runs at `http://localhost:3000`.
 ```bash
 npm start     # development server
 npm test      # run tests in watch mode
